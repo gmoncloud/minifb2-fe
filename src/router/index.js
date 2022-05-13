@@ -4,13 +4,14 @@ import About from "@/views/About.vue";
 import User from "@/views/User.vue";
 import Register from "@/views/Register.vue";
 import Login from "@/views/Login.vue";
+import Profile from "@/views/Profile.vue";
 import NotFound from "@/views/NotFound.vue";
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "Login",
+    component: Login,
   },
   {
     path: "/about",
@@ -23,9 +24,14 @@ const routes = [
     component: Register,
   },
   {
-    path: "/login",
-    name: "Login",
-    component: Login,
+    path: "/home",
+    name: "Home",
+    component: Home,
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
   },
   {
     path: "/user/:name",

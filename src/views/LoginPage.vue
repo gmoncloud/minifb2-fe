@@ -1,32 +1,31 @@
 <template>
+  <div id="text-center">
+    <main class="form-signin">
+      <form @submit="onSubmit">
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-<div id="text-center">
-  <main class="form-signin">
-    <form @submit="onSubmit">
-     <img class="mb-4" src="https://static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg" alt="" width="300" height="100">
-      <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <div class="form-floating">
+          <input type="text" v-model="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
+          <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" v-model="password" name="password" class="form-control" id="floatingPassword" placeholder="Password"/>
+          <label for="floatingPassword">Password</label>
+        </div>
 
-      <div class="form-floating">
-        <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
-        <input type="text" v-model="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
-        <label for="floatingInput">Email address</label>
-      </div>
-      <div class="form-floating">
-        <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-        <input type="password" v-model="password" name="password" class="form-control" id="floatingPassword" placeholder="Password"/>
-        <label for="floatingPassword">Password</label>
-      </div>
+        <div class="checkbox mb-3">
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit" @click="doLogin">Sign in</button>
 
-      <div class="checkbox mb-3">
-        <label>
-          <input type="checkbox" value="remember-me"> Remember me
-        </label>
-      </div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit" @click="doLogin">Sign in</button>
-      <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
-    </form>
-  </main>
-</div>
+        <hr>
+
+        <button class="btn btn-lg btn-success" type="submit" @click="doCreateAccount">Create a new account</button>
+
+        <main-footer />
+      
+      </form>
+    </main>
+  </div>
 </template>
 
 <style scoped>
@@ -74,10 +73,10 @@ body {
 
 <script>
   import axios from 'axios'
-
   export default {
     name: 'login-page',
-    components: {},
+    components: {
+    },
     data() {
         return {
             email: '',
@@ -95,8 +94,6 @@ body {
           email: this.email,
           password: this.password
         }
-
-        //console.log("data", newData);
         this.login(newData.email, newData.password)
       },
       async login(){
@@ -107,16 +104,28 @@ body {
 
         try {
           const res = await axios.post(url, auth).then(res => res.data);
+        
+          if( typeof res.user === 'undefined' ) {
+            this.$router.push({ name: 'Login' })
+            return
+          }
+
           this.success = true;
+          localStorage.setItem("id", res.user.id);
           localStorage.setItem("access_token", res.access_token);
-          //this.loadPosts();
-          this.$router.push({ name: 'Profile' })
+
+          //this.$router.push({ name: 'Profile', params: { id: res.user.id } })
+         this.$router.push({ name: 'Home', params: { id: res.user.id } })
         
         } catch (err) {
           this.error = err.message;
         }
 
 
+      },
+
+      doCreateAccount() {
+        this.$router.push({name: 'Register'}); 
       },
       
       async loadPosts() {

@@ -26,12 +26,14 @@
     methods: {
       async loadProfile() {
           const access_token = localStorage.access_token
+          const id = localStorage.id
           const options = {
             headers: {
               'Content-Type': 'application/json', 
               'Authorization' : 'Bearer ' + access_token}
           };
-          let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/profile/1', options)
+          //let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/profile/' + this.$root.$route.params.id, options)
+          let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/profile/' + id, options)
           this.profile = response.data.profile
 					console.log("res", response.data.profile)
       }

@@ -1,5 +1,6 @@
 <template>
-  <div id="app">
+<main-header />
+  
     <!-- <div id="nav">
       <router-link :to="{ name: 'Home' }">Home</router-link> |
       <router-link :to="{ name: 'About' }">About</router-link> |
@@ -7,17 +8,18 @@
       <router-link :to="{ name: 'Login' }">Login</router-link> 
     </div> -->
     <router-view />
-  </div>
+  
+<main-footer />
 </template>
 
 <style lang="scss">
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-  }
+  // #app {
+  //   font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  //   -webkit-font-smoothing: antialiased;
+  //   -moz-osx-font-smoothing: grayscale;
+  //   text-align: center;
+  //   color: #2c3e50;
+  // }
   #nav {
     padding: 30px;
     a {
@@ -29,3 +31,15 @@
     }
   }
 </style>
+
+<script>
+  import MainHeader from '@/components/Layouts/MainHeader.vue'
+  import MainFooter from '@/components/Layouts/MainFooter.vue'
+
+  export default {
+    components: {
+      MainHeader,
+      MainFooter
+    },
+  };
+</script>

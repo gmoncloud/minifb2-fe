@@ -1,37 +1,55 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Home from "@/views/Home.vue";
-import About from "@/views/About.vue";
+import HomePage from "@/views/HomePage.vue";
+import AboutPage from "@/views/AboutPage.vue";
+import FriendPage from "@/views/FriendPage.vue";
 import User from "@/views/User.vue";
-import Register from "@/views/Register.vue";
-import Login from "@/views/Login.vue";
-import Profile from "@/views/Profile.vue";
+import RegisterPage from "@/views/RegisterPage.vue";
+import LoginPage from "@/views/LoginPage.vue";
+import ProfilePage from "@/views/ProfilePage.vue";
+import PostPage from "@/views/PostPage.vue";
 import NotFound from "@/views/NotFound.vue";
 
 const routes = [
   {
     path: "/",
-    name: "Login",
-    component: Login,
+    name: "Home",
+    component: HomePage,
+    children: [
+      {
+        path: '',
+        component: AboutPage
+      }
+    ],
   },
   {
     path: "/about",
     name: "About",
-    component: About,
+    component: AboutPage,
   },
   {
     path: "/register",
     name: "Register",
-    component: Register,
+    component: RegisterPage,
   },
   {
-    path: "/home",
-    name: "Home",
-    component: Home,
+    path: "/login",
+    name: "Login",
+    component: LoginPage,
   },
   {
     path: "/profile",
     name: "Profile",
-    component: Profile,
+    component: ProfilePage,
+  },
+  {
+    path: "/post",
+    name: "Post",
+    component: PostPage,
+  },
+  {
+    path: "/friends",
+    name: "Friend",
+    component: FriendPage,
   },
   {
     path: "/user/:name",

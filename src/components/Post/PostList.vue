@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-12">
 			<main class="form-post">
-				<form @submit.prevent="onSubmitPost">
+				<form @submit.prevent="">
 						<div class="card mb-3">
 						<!-- <img src="..." class="card-img-top" alt="..."> -->
 

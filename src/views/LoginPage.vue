@@ -1,7 +1,7 @@
 <template>
   <div id="text-center">
     <main class="form-signin">
-      <form @submit="onSubmit">
+      <form @submit.prevent="onSubmit">
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
         <div class="form-floating">
@@ -86,18 +86,12 @@ body {
         }
     },
     methods: {
-      onSubmit(e) {
-        e.preventDefault()
-  
-        const newData = {
-          id: Math.floor(Math.random() * 100000),
+      async onSubmit() {  
+        const auth = {
           email: this.email,
           password: this.password
         }
-        this.login(newData.email, newData.password)
-      },
-      async login(){
-          const auth = { email: this.email, password: this.password };
+  
           const url = process.env.VUE_APP_ROOT_API + '/v1/login';
           this.success = false;
           this.error = null;
@@ -112,6 +106,7 @@ body {
 
           this.success = true;
           localStorage.setItem("id", res.user.id);
+          localStorage.setItem("username", res.user.name);
           localStorage.setItem("access_token", res.access_token);
 
           //this.$router.push({ name: 'Profile', params: { id: res.user.id } })
@@ -123,7 +118,6 @@ body {
 
 
       },
-
       doCreateAccount() {
         this.$router.push({name: 'Register'}); 
       },

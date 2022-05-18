@@ -2,11 +2,14 @@ import { createWebHistory, createRouter } from "vue-router";
 import HomePage from "@/views/HomePage.vue";
 import AboutPage from "@/views/AboutPage.vue";
 import FriendPage from "@/views/FriendPage.vue";
+import FindFriendPage from "@/views/FindFriendPage.vue";
 import User from "@/views/User.vue";
 import RegisterPage from "@/views/RegisterPage.vue";
 import LoginPage from "@/views/LoginPage.vue";
 import ProfilePage from "@/views/ProfilePage.vue";
 import PostPage from "@/views/PostPage.vue";
+import ContactPage from "@/views/ContactPage.vue";
+import CompanyPage from "@/views/CompanyPage.vue";
 import NotFound from "@/views/NotFound.vue";
 
 const routes = [
@@ -16,8 +19,28 @@ const routes = [
     component: HomePage,
     children: [
       {
-        path: '',
-        component: AboutPage
+        path: 'profile',
+        components: {
+          helper: ProfilePage
+        }
+      },
+      {
+        path: 'friends',
+        components: {
+          helper: FriendPage
+        }
+      },
+      {
+        path: 'find-friends',
+        components: {
+          helper: FindFriendPage
+        }
+      },
+      {
+        path: 'post',
+        components: {
+          helper: PostPage,
+        }
       }
     ],
   },
@@ -25,6 +48,21 @@ const routes = [
     path: "/about",
     name: "About",
     component: AboutPage,
+    children: [
+      {
+        path: 'contact',
+        components: {
+          helper: ContactPage
+        }
+      },
+      {
+        path: 'company',
+        components: {
+          default: ContactPage,
+          helper: CompanyPage,
+        }
+      }
+    ],
   },
   {
     path: "/register",
@@ -50,6 +88,21 @@ const routes = [
     path: "/friends",
     name: "Friend",
     component: FriendPage,
+  },
+  {
+    path: "/find-friends",
+    name: "FindFriend",
+    component: FindFriendPage,
+  },
+  {
+    path: "/contact",
+    name: "Contact",
+    component: ContactPage,
+  },
+  {
+    path: "/company",
+    name: "Company",
+    component: CompanyPage,
   },
   {
     path: "/user/:name",

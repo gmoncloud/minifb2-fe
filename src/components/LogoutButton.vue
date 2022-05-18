@@ -15,7 +15,7 @@ v-<template>
         },
         methods: {
             doLogout() {
-            		localStorage.clear()
+                localStorage.clear()
                 sessionStorage.clear();
                 this.$router.push({name: 'Login'}); 
             }

@@ -8,6 +8,7 @@
           <input type="text" v-model="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
           <label for="floatingInput">Email address</label>
         </div>
+        
         <div class="form-floating">
           <input type="password" v-model="password" name="password" class="form-control" id="floatingPassword" placeholder="Password"/>
           <label for="floatingPassword">Password</label>
@@ -19,10 +20,7 @@
 
         <hr>
 
-        <button class="btn btn-lg btn-success" type="submit" @click="doCreateAccount">Create a new account</button>
-
-        <main-footer />
-      
+        <button class="btn btn-lg btn-success" type="submit" @click="doCreateAccount">Create a new account</button>      
       </form>
     </main>
   </div>

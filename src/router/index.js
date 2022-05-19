@@ -1,16 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 import HomePage from "@/views/HomePage.vue";
-import AboutPage from "@/views/AboutPage.vue";
-import FriendPage from "@/views/FriendPage.vue";
-import FindFriendPage from "@/views/FindFriendPage.vue";
 import User from "@/views/User.vue";
-import RegisterPage from "@/views/RegisterPage.vue";
-import LoginPage from "@/views/LoginPage.vue";
-import ProfilePage from "@/views/ProfilePage.vue";
-import PostPage from "@/views/PostPage.vue";
-import ContactPage from "@/views/ContactPage.vue";
-import CompanyPage from "@/views/CompanyPage.vue";
-import NotFound from "@/views/NotFound.vue";
 
 const routes = [
   {
@@ -21,45 +11,25 @@ const routes = [
       {
         path: 'profile',
         components: {
-          helper: ProfilePage
+          helper: ()=> import("@/views/ProfilePage.vue")
         }
       },
       {
         path: 'friends',
         components: {
-          helper: FriendPage
+          helper: ()=> import("@/views/FriendPage.vue")
         }
       },
       {
         path: 'find-friends',
         components: {
-          helper: FindFriendPage
+          helper: ()=> import("@/views/FindFriendPage.vue")
         }
       },
       {
         path: 'post',
         components: {
-          helper: PostPage,
-        }
-      }
-    ],
-  },
-  {
-    path: "/about",
-    name: "About",
-    component: AboutPage,
-    children: [
-      {
-        path: 'contact',
-        components: {
-          helper: ContactPage
-        }
-      },
-      {
-        path: 'company',
-        components: {
-          default: ContactPage,
-          helper: CompanyPage,
+          helper: import("@/views/PostPage.vue"),
         }
       }
     ],
@@ -67,42 +37,12 @@ const routes = [
   {
     path: "/register",
     name: "Register",
-    component: RegisterPage,
+    component: import("@/views/RegisterPage.vue"),
   },
   {
     path: "/login",
     name: "Login",
-    component: LoginPage,
-  },
-  {
-    path: "/profile",
-    name: "Profile",
-    component: ProfilePage,
-  },
-  {
-    path: "/post",
-    name: "Post",
-    component: PostPage,
-  },
-  {
-    path: "/friends",
-    name: "Friend",
-    component: FriendPage,
-  },
-  {
-    path: "/find-friends",
-    name: "FindFriend",
-    component: FindFriendPage,
-  },
-  {
-    path: "/contact",
-    name: "Contact",
-    component: ContactPage,
-  },
-  {
-    path: "/company",
-    name: "Company",
-    component: CompanyPage,
+    component: import("@/views/LoginPage.vue"),
   },
   {
     path: "/user/:name",
@@ -111,7 +51,7 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
-    component: NotFound,
+    component: import("@/views/NotFound.vue"),
   },
 ];
 

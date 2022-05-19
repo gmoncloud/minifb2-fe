@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-12">
 			<main class="form-post">
-				<form @submit.prevent="">
+				<form @submit.prevent="onSubmitPost">
 						<div class="card mb-3">
 						<!-- <img src="..." class="card-img-top" alt="..."> -->
 
@@ -12,7 +12,7 @@
 									<div class="form-group col-10 float-right">
 										<textarea v-model="writtenText" name="written_text" class="comment float-start form-control" placeholder="Whats on your mind"></textarea>
 									</div>
-									<button type="submit" class="btn btn-primary btn-sm col-1 float-start">Submit</button>
+									<button type="submit" class="btn btn-primary btn-sm col-1 float-start">Post</button>
 								</div>
 						</div>
 					</div>
@@ -23,10 +23,10 @@
   <div class="row">
     <div class="col-12" v-if="posts.length" >
 			
-			<div class="card mb-3" v-for="post in posts" :key="post.id">
+			<div class="card mb-2" v-for="post in posts" :key="post.id">
 				<!-- <img src="..." class="card-img-top" alt="..."> -->
 
-				<div class="card-body">
+				<!-- <div class="card-body text-start">
 					<p class="card-text">{{ post.written_text }}</p>
 					<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
 					
@@ -34,13 +34,29 @@
 						<div class="form-group col-10 float-right">
 							<textarea class="comment float-start form-control" placeholder="Leave a comment here"></textarea>
 						</div>
-						<button type="button" class="btn btn-primary btn-sm col-1 float-start">Submit</button>
+						<button type="button" class="btn btn-primary btn-sm col-1 float-start"  @click="doComment(post.id)">Comment</button>
 					</div>
 
 					<section class="float-none col-12">
-						<span class="like" @click="doComment(post.id)">Like</span>
+						<span class="like" @click="doLike(post.id)">Like</span>
 					</section>
-				</div>
+				</div> -->
+
+    <div class="col-md-7 text-start">
+      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+          <h3 class="mb-0">{{ post.written_text }}</h3>
+          <p class="card-text mb-auto">Last updated 3 mins ago</p>
+          <div class="row">
+						<button class="col-md-6">Like (10)</button> <button class="col-md-6">Comment</button>
+					</div>
+        </div>
+        <div class="col-auto d-none d-lg-block">
+          <svg class="bd-placeholder-img" width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+        </div>
+      </div>
+    </div>
+
 			</div>
 
     </div>

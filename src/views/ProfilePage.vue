@@ -2,7 +2,7 @@
 <div class="container text-start">
   <div class="row">
     <div class="col-6">
-      <form @submit.prevent="updateProfile">
+      <form @submit.prevent="updateProfile" enctype="multipart/form-data">
         <div class="row mb-3">
           <label for="input-display-name" class="col-sm-3 col-form-label">Display Name</label>
           <div class="col-sm-9">
@@ -39,7 +39,11 @@
     <div class="col-6">
       <img v-if="profile.profile_image" :src="profile.profile_image" :alt="profile.display_name" height="150" width="150" />
       <img v-else :src="defaultImage" alt="no-image-available" height="150" width="150" />
-      <input type="file" @input="selectFile">
+      <input type="file" class="form-control" @change="onChange">
+
+      <!-- <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+      <button v-on:click="submitFile()">Submit</button> -->
+
   </div>
 </div>
 </div>
@@ -55,6 +59,7 @@
 		props: ['id'],
     data() {
         return {
+          file: '',
           user_id: localStorage.id,
           defaultImage: image,
           options: {
@@ -63,7 +68,7 @@
                 'Authorization' : 'Bearer ' + localStorage.access_token
               }
             },
-            optionsImage: {
+            optionImage: {
               headers: {
                 'Content-Type': 'multipart/form-data', 
                 'Authorization' : 'Bearer ' + localStorage.access_token
@@ -81,28 +86,38 @@
         }
     },
     methods: {
-      selectFile() {
-        
+
+      onChange(e) {
+        this.file = e.target.files[0];
+        console.log(this.file)
       },
       async updateProfile() {
         const url = process.env.VUE_APP_ROOT_API + '/v1/profile/' + this.user_id;
         this.success = false;
         this.error = null;
+        try {
+          let data = new FormData()
+          data.append('display_name', this.profile.display_name)
+          data.append('profile_image', this.file)
+          data.append('education', this.profile.education)
+          data.append('current_city', this.profile.current_city)
+          data.append('hometown', this.profile.hometown)
+          data.append('work', this.profile.work)
+          data.append('_method', 'PUT')
 
-      try {
-        const res = await axios.post(url, this.profile, this.optionsImage).then(res => res.data);
-      
-        if( typeof res.user === 'undefined' ) {
-          console.log("Something went wrong!");
-          return
+
+          const res = await axios.post(url, data, this.optionImage).then(res => res.data);
+        
+          if( typeof res.profile === 'undefined' ) {
+            console.log("Something went wrong!");
+            return
+          }
+
+          this.success = true;
+        
+        } catch (err) {
+          this.error = err.message;
         }
-
-        this.success = true;
-        this.$router.push({ name: 'Login' })
-      
-      } catch (err) {
-        this.error = err.message;
-      }
       },
       async loadProfile() {
           const id = localStorage.id

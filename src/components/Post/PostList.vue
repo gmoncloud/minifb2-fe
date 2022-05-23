@@ -28,10 +28,9 @@
 								<h3 class="mb-0">{{ post.written_text }}</h3>
 								<p class="card-text mb-auto">Last updated 3 mins ago</p>
 								<div class="row">
-									<button class="col-md-4" @click="doLike(post.id)">Like (10)</button> <button class="col-md-4">Comment</button>
-									<button type="button" class="btn btn-primary col-md-4" data-bs-toggle="modal" data-bs-target="#exampleModal" :data-post-id="post.id" @click="editPost(post.id)">
-										Edit Post
-									</button>
+									<button type="button" class="btn btn-primary col-md-4" @click="doLike(post.id)">Like (10)</button>
+									<button type="button" class="btn btn-primary col-md-4" data-bs-toggle="modal" data-bs-target="#commentModal" @click="doComment(post.id)">Comment</button>
+									<button type="button" class="btn btn-primary col-md-4" data-bs-toggle="modal" data-bs-target="#postModal" @click="editPost(post.id)">Edit Post</button>
 								</div>
 							</div>
 							<div class="col-auto d-none d-lg-block">
@@ -40,16 +39,15 @@
 							</div>
 														
 								<!-- Modal Candidate -->
-								<!-- Modal -->
-								<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<!-- Post Modal -->
+								<div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
 									<div class="modal-dialog">
 										<form @submit.prevent="updatePostForm" enctype="multipart/form-data">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+													<h5 class="modal-title" id="postModalLabel">Edit Post</h5>
 													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 												</div>
-
 												<!-- Modal Candidate -->
 												<div class="modal-body">
 													<div class="container-fluid">
@@ -67,7 +65,6 @@
 														</main>
 													</div>
 												</div>
-
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 													<button type="submit" class="btn btn-primary" @click="updatePost(postDetail.id)">Save changes</button>
@@ -76,11 +73,46 @@
 										</form>
 									</div>
 								</div>
+								<!-- Post Modal end here -->
 
-						
+								<!-- Comment Modal -->
+								<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+									<div class="modal-dialog">
+										<form @submit.prevent="commentPostForm">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="commentModalLabel">Comment Section</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<!-- Modal Candidate -->
+												<div class="modal-body">
+													<div class="container-fluid">
+														<main class="form-post">
+															<div class="card mb-3">
+																	<div class="card-body">						
+																		<div class="float-holder clearfix">
+																			<div class="form-group col-12 float-right">
+																				<textarea v-model="comment.comment_text" name="comment_text" class="comment float-start form-control" placeholder="Type your comment here..."></textarea>
+																			</div>
+																		</div>
+																</div>
+															</div>
+														</main>
+													</div>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary" @click="commentPost(comment.post_id)">Submit</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+								<!-- Comment Modal end here -->
+
 						</div>
 					</div>
-				</div>
+			</div>
     </div>
   </div>
 </div>
@@ -127,6 +159,10 @@
 									user_id: '',
 									written_text: '',
 									post_image: ''
+								},
+								comment: {
+									post_id: '',
+									comment_text: ''
 								}
             }
         },
@@ -161,9 +197,12 @@
 						this.postDetail = response.data.post
 						console.log("edit post", this.postDetail)
 					},
+					async doComment(post_id) {
+						this.comment.post_id = post_id
+					},
 					onChange(e) {
 						this.file = e.target.files[0];
-						console.log(this.file)
+						console.log(this.file)	
 					},
 					async onSubmitPost(){
 						try {
@@ -200,6 +239,24 @@
 							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/like', formData, this.options).then(res => res.data);
 						
 							if( typeof res.like === 'undefined' ) {
+								console.log("Something went wrong")
+								return
+							}
+
+							this.success = true;
+						
+						} catch (err) {
+							this.error = err.message;
+						}
+					},
+					async commentPost(post_id) {
+						console.log("comment post id: ", post_id);
+						const formData = { user_id: localStorage.id, post_id: post_id, comment_text: this.comment.comment_text };
+
+						try {
+							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/comment', formData, this.options).then(res => res.data);
+						
+							if( typeof res.comment === 'undefined' ) {
 								console.log("Something went wrong")
 								return
 							}

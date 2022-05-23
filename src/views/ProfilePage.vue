@@ -43,7 +43,6 @@
 
       <!-- <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
       <button v-on:click="submitFile()">Submit</button> -->
-
   </div>
 </div>
 </div>
@@ -104,7 +103,6 @@
           data.append('hometown', this.profile.hometown)
           data.append('work', this.profile.work)
           data.append('_method', 'PUT')
-
 
           const res = await axios.post(url, data, this.optionImage).then(res => res.data);
         

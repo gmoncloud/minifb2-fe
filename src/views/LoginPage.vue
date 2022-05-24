@@ -4,6 +4,10 @@
       <form @submit.prevent="onSubmit">
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
+        <div class="error-message" v-if="errorMessage">
+          <label>{{ errorMessage }}</label>
+        </div>
+
         <div class="form-floating">
           <input type="text" v-model="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
           <label for="floatingInput">Email address</label>
@@ -77,6 +81,7 @@ body {
     },
     data() {
         return {
+            errorMessage: '',
             email: '',
             password: '',
             error: null,
@@ -97,8 +102,8 @@ body {
         try {
           const res = await axios.post(url, auth).then(res => res.data);
         
-          if( typeof res.user === 'undefined' ) {
-            this.$router.push({ name: 'Login' })
+          if(res.error_message) {
+            this.errorMessage = res.error_message
             return
           }
 
@@ -111,7 +116,7 @@ body {
          this.$router.push({ name: 'Home', params: { id: res.user.id } })
         
         } catch (err) {
-          this.error = err.message;
+          this.error = err.message
         }
 
 

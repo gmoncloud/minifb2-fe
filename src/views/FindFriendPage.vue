@@ -5,8 +5,8 @@
   </div>
     <div class="row" v-for="friend in friends" :key="friend.id">
       <div class="col-lg-12 text-start">
-        <svg class="bd-placeholder-img rounded-circle" width="80" height="80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
-
+        <img v-if="friend.profile_image" :src="friend.profile_image" :alt="friend.name" height="80" width="80" />
+        <img v-else :src="defaultImage" alt="no-image-available" height="50" width="50" />
         <h4>{{ friend.name }}</h4>
         <p><a class="btn btn-secondary" href="#" @click="addFriend(friend.id)">Add Friend</a></p>
       </div>
@@ -16,11 +16,13 @@
 </template>
 <script>
   import axios from 'axios'
+  import image from '@/assets/no-image-available.jpg'
   export default {
     name: 'find-friend-page',
     components: {},
     data() {
         return {
+          defaultImage: image,
           friends: [],
           user_id: localStorage.id,
           options: {

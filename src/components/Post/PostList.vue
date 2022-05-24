@@ -27,19 +27,28 @@
 							<div class="col p-4 d-flex flex-column position-static">
 								<h3 class="mb-0">{{ post.written_text }}</h3>
 								<p class="card-text mb-auto">Last updated 3 mins ago</p>
-								<div class="row">
-									<button type="button" class="btn btn-primary col-md-4" @click="doLike(post.id)">Like (10)</button>
-									<button type="button" class="btn btn-primary col-md-4" data-bs-toggle="modal" data-bs-target="#commentModal" @click="doComment(post.id)">Comment</button>
-									<button type="button" class="btn btn-primary col-md-4" data-bs-toggle="modal" data-bs-target="#postModal" @click="editPost(post.id)">Edit Post</button>
+								<div class="row post-btn">
+									<button type="button" class="btn btn-primary col-md-3" @click="doLike(post.id)">Like ({{ post.likes_count }})</button>
+									<button type="button" class="btn btn-primary col-md-5" data-bs-toggle="modal" data-bs-target="#commentModal" @click="doComment(post.id)">Comment ({{ post.comments_count }})</button>
+									<button type="button" class="btn btn-primary col-md-2" data-bs-toggle="modal" data-bs-target="#postModal" @click="editPost(post.id)">Edit</button>
+									<button type="button" class="btn btn-primary col-md-2"  @click="deletePost(post.id)">Delete</button>
 								</div>
 							</div>
+
 							<div class="col-auto d-none d-lg-block">
 								<img v-if="post.post_image" :src="post.post_image" alt="post-image" height="150" width="150" />
 								<img v-else :src="defaultImage" alt="no-image-available" height="150" width="150" />
 							</div>
+
+								<ul>
+									<li class="test" v-for="comment in post.comments" :key="comment.id">
+											{{ comment.comment_text }}
+									</li>
+								</ul>
 														
 								<!-- Modal Candidate -->
 								<!-- Post Modal -->
+
 								<div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
 									<div class="modal-dialog">
 										<form @submit.prevent="updatePostForm" enctype="multipart/form-data">
@@ -110,6 +119,10 @@
 								</div>
 								<!-- Comment Modal end here -->
 
+					
+
+							
+
 						</div>
 					</div>
 			</div>
@@ -154,6 +167,7 @@
 								},
 								moment: moment,
                 posts: [],
+								comments: [],
 								postDetail: {
 									id: '',
 									user_id: '',
@@ -230,10 +244,12 @@
 					async loadPosts() {
 							let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/post', this.options)
 							this.posts = response.data.posts
+							this.comments = response.data.posts.comments
 							console.log("res", response.data)
+							console.log("comments", response.data.posts[0].comments)
 					},
 					async doLike(post_id) {
-						const formData = { user_id: localStorage.id, post_id: post_id, like: 1 };
+						const formData = { user_id: localStorage.id, post_id: post_id};
 
 						try {
 							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/like', formData, this.options).then(res => res.data);
@@ -243,6 +259,15 @@
 								return
 							}
 
+							this.success = true;
+						
+						} catch (err) {
+							this.error = err.message;
+						}
+					},
+					deletePost(post_id) {
+						try {
+							axios.delete(process.env.VUE_APP_ROOT_API + '/v1/post/' + post_id, this.options).then(res => res.data);
 							this.success = true;
 						
 						} catch (err) {

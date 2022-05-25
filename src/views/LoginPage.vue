@@ -4,8 +4,8 @@
       <form @submit.prevent="onSubmit">
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-        <div class="error-message" v-if="errorMessage">
-          <label>{{ errorMessage }}</label>
+        <div class="alert alert-danger" role="alert" v-if="errorMessage">
+          {{ errorMessage }}
         </div>
 
         <div class="form-floating">
@@ -119,22 +119,10 @@ body {
           this.error = err.message
         }
 
-
-      },
-      doCreateAccount() {
-        this.$router.push({name: 'Register'}); 
       },
       
-      async loadPosts() {
-          const access_token = localStorage.access_token
-          const options = {
-            headers: {
-              'Content-Type': 'application/json', 
-              'Authorization' : 'Bearer ' + access_token}
-          };
-          let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/profile/1', options)
-          this.posts = response.data
-          console.log("loadPost: ", this.posts);
+      doCreateAccount() {
+        this.$router.push({name: 'Register'}); 
       }
     }
   };

@@ -1,6 +1,6 @@
 import Axios from 'axios'
 
-const RESOURCE_NAME_LOGIN = process.env.VUE_APP_ROOT_API + '/v1/login'
+const RESOURCE_NAME = process.env.VUE_APP_ROOT_API + '/v1/like'
 const OPTIONS = {
   headers: {
     'Content-Type': 'multipart/form-data', 
@@ -9,7 +9,7 @@ const OPTIONS = {
 }
 
 export default {
-  login(data) {
-    return Axios.post(RESOURCE_NAME_LOGIN, data, OPTIONS);
+  likePost(data) {
+    return Axios.post(RESOURCE_NAME, data, OPTIONS);
   }
 }

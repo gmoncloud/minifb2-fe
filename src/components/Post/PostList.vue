@@ -39,14 +39,13 @@
 								<img v-if="post.post_image" :src="post.post_image" alt="post-image" height="150" width="150" />
 								<img v-else :src="defaultImage" alt="no-image-available" height="150" width="150" />
 							</div>
-
+              
 							<div class="card" v-for="comment in post.comments" :key="comment.id">
 								<div class="card-body">
 									<!-- <h5 class="card-title">Card title</h5> -->
 									<p>{{ comment.comment_text }}</p>
 								</div>
 							</div>
-
 														
 								<!-- Modal Candidate -->
 								<!-- Post Modal -->
@@ -207,6 +206,9 @@
 					async doComment(post_id) {
 						this.comment.post_id = post_id
 					},
+					async doComment(post_id) {
+						this.comment.post_id = post_id
+					},
 					onChange(e) {
 						this.file = e.target.files[0];
 						console.log(this.file)	
@@ -263,7 +265,6 @@
 							console.log(error);
 						})
 					},
-
         },
         mounted() {
             this.loadPosts()

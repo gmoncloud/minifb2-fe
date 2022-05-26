@@ -36,20 +36,22 @@
         <button type="submit" class="btn btn-primary">Save</button>
       </form>
     </div>
-    <div class="col-6">
+    <div class="col-4">
       <img v-if="profile.profile_image" :src="profile.profile_image" :alt="profile.display_name" height="150" width="150" />
       <img v-else :src="defaultImage" alt="no-image-available" height="150" width="150" />
       <input type="file" class="form-control" @change="onChange">
+        
+      <div class="alert alert-danger" role="alert" v-if="errors && errors.profile_image">
+        {{ errors.profile_image[0] }}
+      </div>
 
-      <!-- <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-      <button v-on:click="submitFile()">Submit</button> -->
   </div>
 </div>
 </div>
 </template>
 
 <script>
-  import axios from 'axios'
+  import ProfileService from '@/services/profile.service'
   import image from '@/assets/no-image-available.jpg'
 
   export default {
@@ -58,6 +60,8 @@
 		props: ['id'],
     data() {
         return {
+          errors: {},
+          errorMessage: '',
           file: '',
           user_id: localStorage.id,
           defaultImage: image,
@@ -85,48 +89,44 @@
         }
     },
     methods: {
-
       onChange(e) {
         this.file = e.target.files[0];
         console.log(this.file)
       },
       async updateProfile() {
-        const url = process.env.VUE_APP_ROOT_API + '/v1/profile/' + this.user_id;
+        const userID = this.user_id
         this.success = false;
-        this.error = null;
-        try {
-          let data = new FormData()
-          data.append('display_name', this.profile.display_name)
-          data.append('profile_image', this.file)
-          data.append('education', this.profile.education)
-          data.append('current_city', this.profile.current_city)
-          data.append('hometown', this.profile.hometown)
-          data.append('work', this.profile.work)
-          data.append('_method', 'PUT')
 
-          const res = await axios.post(url, data, this.optionImage).then(res => res.data);
-        
-          if( typeof res.profile === 'undefined' ) {
-            console.log("Something went wrong!");
-            return
-          }
+        let data = new FormData()
+        data.append('display_name', this.profile.display_name)
+        data.append('profile_image', this.file)
+        data.append('education', this.profile.education)
+        data.append('current_city', this.profile.current_city)
+        data.append('hometown', this.profile.hometown)
+        data.append('work', this.profile.work)
+        data.append('_method', 'PUT')
 
+        await ProfileService.update(userID, data).then((response) => {
+          this.profile = response.data.profile
           this.success = true;
-        
-        } catch (err) {
-          this.error = err.message;
-        }
+        }).catch((err) => {
+          if (err.response.status == 422) {
+              this.errors = err.response.data.errors;
+          }
+          console.log(err.response.data);
+        })
+
       },
       async loadProfile() {
-          const id = localStorage.id
-          //let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/profile/' + this.$root.$route.params.id, options)
-          let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/profile/' + id, this.options)
+        await ProfileService.getAll().then((response) => {
           this.profile = response.data.profile
-					console.log("res", response.data.profile)
-      }
+        }).catch((error) => {
+          console.log(error.response.data);
+        })
+      },
     },
     mounted() {
-        this.loadProfile()
+      this.loadProfile()
     }
   };
 </script>

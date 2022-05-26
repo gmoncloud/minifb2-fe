@@ -39,12 +39,13 @@
 								<img v-if="post.post_image" :src="post.post_image" alt="post-image" height="150" width="150" />
 								<img v-else :src="defaultImage" alt="no-image-available" height="150" width="150" />
 							</div>
-
-								<ul>
-									<li class="test" v-for="comment in post.comments" :key="comment.id">
-											{{ comment.comment_text }}
-									</li>
-								</ul>
+              
+							<div class="card" v-for="comment in post.comments" :key="comment.id">
+								<div class="card-body">
+									<!-- <h5 class="card-title">Card title</h5> -->
+									<p>{{ comment.comment_text }}</p>
+								</div>
+							</div>
 														
 								<!-- Modal Candidate -->
 								<!-- Post Modal -->
@@ -118,11 +119,6 @@
 									</div>
 								</div>
 								<!-- Comment Modal end here -->
-
-					
-
-							
-
 						</div>
 					</div>
 			</div>
@@ -142,7 +138,9 @@
 
 <script>
 		import moment from "moment";
-    import axios from 'axios'
+		import PostService from '@/services/post.service'
+		import LikeService from '@/services/like.service'
+		import CommentService from '@/services/comment.service'
 		import image from '@/assets/no-image-available.jpg'
     export default {
         name: 'post-list',
@@ -182,34 +180,31 @@
         },
         methods: {
 					async updatePost(post_id) {
-					const url = process.env.VUE_APP_ROOT_API + '/v1/post/' + post_id;
-					this.success = false;
-					this.error = null;
-					try {
 						let data = new FormData()
 						data.append('user_id', localStorage.id)
 						data.append('written_text', this.postDetail.written_text)
 						data.append('post_image', this.file)
 						data.append('_method', 'PUT')
 
-						const res = await axios.post(url, data, this.optionImage).then(res => res.data);
-					
-						if( typeof res.profile === 'undefined' ) {
-							console.log("Something went wrong!");
-							return
-						}
-
-						this.success = true;
-					
-					} catch (err) {
-						this.error = err.message;
-					}
+						await PostService.update(post_id, data).then((response) => {
+							this.postDetail = response.data.post
+							console.log(response.data.post)
+						}).catch((error) => {
+							console.log(error);
+						})
 					},
+					
 					async editPost(post_id) {
-						console.log("post_id", post_id)
-						let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/post/' + post_id, this.options)
-						this.postDetail = response.data.post
-						console.log("edit post", this.postDetail)
+						await PostService.getPostById(post_id).then((response) => {
+							this.postDetail = response.data.post
+							console.log(response.data.post)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
+
+					async doComment(post_id) {
+						this.comment.post_id = post_id
 					},
 					async doComment(post_id) {
 						this.comment.post_id = post_id
@@ -218,80 +213,58 @@
 						this.file = e.target.files[0];
 						console.log(this.file)	
 					},
-					async onSubmitPost(){
-						try {
-							let data = new FormData()
-							data.append('user_id', localStorage.id)
-							data.append('written_text', this.writtenText)
-							data.append('post_image', this.file)
 
-							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/post', data, this.optionImage).then(res => res.data);
-		
-							if( typeof res.post === 'undefined' ) {
-								this.$router.push({ name: 'Post' })
-								return
-							}
+					async onSubmitPost() {
+						let data = new FormData()
+						data.append('user_id', localStorage.id)
+						data.append('written_text', this.writtenText)
+						data.append('post_image', this.file)
 
-							this.success = true;
-							console.log("test", this.success)
-							this.$router.push({ name: 'Post' })
-						
-						} catch (err) {
-							this.error = err.message;
-						}
-
+						await PostService.create(data).then((response) => {
+							this.posts = this.loadPosts()
+							console.log(response)
+						}).catch((error) => {
+							console.log(error);
+						})
 					},
+
 					async loadPosts() {
-							let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/post', this.options)
+						await PostService.getAll().then((response) => {
 							this.posts = response.data.posts
 							this.comments = response.data.posts.comments
-							console.log("res", response.data)
-							console.log("comments", response.data.posts[0].comments)
+						}).catch((error) => {
+							console.log(error.response.data);
+						})
 					},
+					
 					async doLike(post_id) {
-						const formData = { user_id: localStorage.id, post_id: post_id};
-
-						try {
-							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/like', formData, this.options).then(res => res.data);
-						
-							if( typeof res.like === 'undefined' ) {
-								console.log("Something went wrong")
-								return
-							}
-
-							this.success = true;
-						
-						} catch (err) {
-							this.error = err.message;
-						}
+						const data = { user_id: localStorage.id, post_id: post_id};
+						await LikeService.likePost(data).then((response) => {
+							this.posts = this.loadPosts()
+							console.log(response.data)
+						}).catch((error) => {
+							console.log(error);
+						})
 					},
-					deletePost(post_id) {
-						try {
-							axios.delete(process.env.VUE_APP_ROOT_API + '/v1/post/' + post_id, this.options).then(res => res.data);
-							this.success = true;
-						
-						} catch (err) {
-							this.error = err.message;
-						}
+
+					async deletePost(post_id) {
+						await PostService.delete(post_id).then((response) => {
+							console.log("data", response)
+							this.posts = this.loadPosts()
+						}).catch((error) => {
+							console.log(error);
+						})
 					},
+
 					async commentPost(post_id) {
-						console.log("comment post id: ", post_id);
-						const formData = { user_id: localStorage.id, post_id: post_id, comment_text: this.comment.comment_text };
-
-						try {
-							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/comment', formData, this.options).then(res => res.data);
-						
-							if( typeof res.comment === 'undefined' ) {
-								console.log("Something went wrong")
-								return
-							}
-
-							this.success = true;
-						
-						} catch (err) {
-							this.error = err.message;
-						}
-					}
+						const data = { user_id: localStorage.id, post_id: post_id, comment_text: this.comment.comment_text }
+						await CommentService.create(data).then((response) => {
+							this.posts = this.loadPosts()
+							console.log(response.data)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
         },
         mounted() {
             this.loadPosts()

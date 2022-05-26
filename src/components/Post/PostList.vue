@@ -194,8 +194,7 @@
 							console.log(error);
 						})
 					},
-
-
+					
 					async editPost(post_id) {
 						await PostService.getPostById(post_id).then((response) => {
 							this.postDetail = response.data.post

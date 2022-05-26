@@ -11,11 +11,19 @@
         <div class="form-floating">
           <input type="text" v-model="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
           <label for="floatingInput">Email address</label>
+
+          <div class="alert alert-danger" role="alert" v-if="errors && errors.email">
+            {{ errors.email[0] }}
+          </div>
         </div>
         
         <div class="form-floating">
           <input type="password" v-model="password" name="password" class="form-control" id="floatingPassword" placeholder="Password"/>
           <label for="floatingPassword">Password</label>
+
+          <div class="alert alert-danger" role="alert" v-if="errors && errors.password">
+            {{ errors.password[0] }}
+          </div>
         </div>
 
         <div class="checkbox mb-3">
@@ -74,51 +82,42 @@ body {
 </style>
 
 <script>
-  import axios from 'axios'
+  import UserService from '@/services/user.service'
   export default {
     name: 'login-page',
     components: {
     },
     data() {
         return {
-            errorMessage: '',
-            email: '',
-            password: '',
-            error: null,
-            success: false
+          errors: {},
+          errorMessage: '',
+          email: '',
+          password: '',
+          error: null,
+          success: false
         }
     },
     methods: {
-      async onSubmit() {  
-        const auth = {
-          email: this.email,
-          password: this.password
-        }
-  
-          const url = process.env.VUE_APP_ROOT_API + '/v1/login';
-          this.success = false;
-          this.error = null;
+      async onSubmit() {
+        const data = { email: this.email, password: this.password};
+        await UserService.login(data).then((res) => {
 
-        try {
-          const res = await axios.post(url, auth).then(res => res.data);
-        
-          if(res.error_message) {
-            this.errorMessage = res.error_message
+         if(res.data.error_message) {
+            this.errorMessage = res.data.error_message
             return
           }
 
-          this.success = true;
-          localStorage.setItem("id", res.user.id);
-          localStorage.setItem("username", res.user.name);
-          localStorage.setItem("access_token", res.access_token);
+          localStorage.setItem("id", res.data.user.id);
+          localStorage.setItem("username", res.data.user.name);
+          localStorage.setItem("access_token", res.data.access_token);
+          this.$router.push({ name: 'Home', params: { id: res.data.user.id } })
 
-          //this.$router.push({ name: 'Profile', params: { id: res.user.id } })
-         this.$router.push({ name: 'Home', params: { id: res.user.id } })
-        
-        } catch (err) {
-          this.error = err.message
-        }
-
+        }).catch((err) => {
+          if (err.res.status == 422) {
+              this.errors = err.response.data.errors;
+          }
+          console.log('Error');
+        })
       },
       
       doCreateAccount() {

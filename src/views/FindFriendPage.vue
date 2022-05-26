@@ -34,29 +34,13 @@
       }
     },
     methods: {
-        async addFriend(friend_id){
+      async addFriend(friend_id){
         const data = { user_id: localStorage.id, friend_id: friend_id };
-        // console.log("formData", formData);
-        // try {
-        //   const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/friend', formData, this.options).then(res => res.data);
-
-        //   if( typeof res.friend === 'undefined' ) {
-        //     console.log("Something went wrong!")
-        //     return
-        //   }
-
-        //   this.success = true;
-        
-        // } catch (err) {
-        //   this.error = err.message;
-        // }
-
         await FriendService.create(data).then((response) => {
           this.friends = response.data.users
         }).catch((error) => {
           console.log(error.response.data);
         })
-
       },
       async loadFindFriends() {
         await FriendService.findFriends().then((response) => {

@@ -11,7 +11,6 @@
       </div>
     </div>
  </div>
-
 </template>
 <script>
   import FriendService from '@/services/friend.service'

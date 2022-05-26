@@ -27,29 +27,37 @@
 							<div class="col p-4 d-flex flex-column position-static">
 								<h3 class="mb-0">{{ post.written_text }}</h3>
 								<p class="card-text mb-auto">Last updated 3 mins ago</p>
-								<div class="row">
-									<button class="col-md-4" @click="doLike(post.id)">Like (10)</button> <button class="col-md-4">Comment</button>
-									<button type="button" class="btn btn-primary col-md-4" data-bs-toggle="modal" data-bs-target="#exampleModal" :data-post-id="post.id" @click="editPost(post.id)">
-										Edit Post
-									</button>
+								<div class="row post-btn">
+									<button type="button" class="btn btn-primary col-md-3" @click="doLike(post.id)">Like ({{ post.likes_count }})</button>
+									<button type="button" class="btn btn-primary col-md-5" data-bs-toggle="modal" data-bs-target="#commentModal" @click="doComment(post.id)">Comment ({{ post.comments_count }})</button>
+									<button type="button" class="btn btn-primary col-md-2" data-bs-toggle="modal" data-bs-target="#postModal" @click="editPost(post.id)">Edit</button>
+									<button type="button" class="btn btn-primary col-md-2"  @click="deletePost(post.id)">Delete</button>
 								</div>
 							</div>
+
 							<div class="col-auto d-none d-lg-block">
 								<img v-if="post.post_image" :src="post.post_image" alt="post-image" height="150" width="150" />
 								<img v-else :src="defaultImage" alt="no-image-available" height="150" width="150" />
 							</div>
+              
+							<div class="card" v-for="comment in post.comments" :key="comment.id">
+								<div class="card-body">
+									<!-- <h5 class="card-title">Card title</h5> -->
+									<p>{{ comment.comment_text }}</p>
+								</div>
+							</div>
 														
 								<!-- Modal Candidate -->
-								<!-- Modal -->
-								<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<!-- Post Modal -->
+
+								<div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
 									<div class="modal-dialog">
 										<form @submit.prevent="updatePostForm" enctype="multipart/form-data">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+													<h5 class="modal-title" id="postModalLabel">Edit Post</h5>
 													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 												</div>
-
 												<!-- Modal Candidate -->
 												<div class="modal-body">
 													<div class="container-fluid">
@@ -67,7 +75,6 @@
 														</main>
 													</div>
 												</div>
-
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 													<button type="submit" class="btn btn-primary" @click="updatePost(postDetail.id)">Save changes</button>
@@ -76,11 +83,45 @@
 										</form>
 									</div>
 								</div>
+								<!-- Post Modal end here -->
 
-						
+								<!-- Comment Modal -->
+								<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+									<div class="modal-dialog">
+										<form @submit.prevent="commentPostForm">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="commentModalLabel">Comment Section</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<!-- Modal Candidate -->
+												<div class="modal-body">
+													<div class="container-fluid">
+														<main class="form-post">
+															<div class="card mb-3">
+																	<div class="card-body">						
+																		<div class="float-holder clearfix">
+																			<div class="form-group col-12 float-right">
+																				<textarea v-model="comment.comment_text" name="comment_text" class="comment float-start form-control" placeholder="Type your comment here..."></textarea>
+																			</div>
+																		</div>
+																</div>
+															</div>
+														</main>
+													</div>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary" @click="commentPost(comment.post_id)">Submit</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+								<!-- Comment Modal end here -->
 						</div>
 					</div>
-				</div>
+			</div>
     </div>
   </div>
 </div>
@@ -97,7 +138,9 @@
 
 <script>
 		import moment from "moment";
-    import axios from 'axios'
+		import PostService from '@/services/post.service'
+		import LikeService from '@/services/like.service'
+		import CommentService from '@/services/comment.service'
 		import image from '@/assets/no-image-available.jpg'
     export default {
         name: 'post-list',
@@ -122,94 +165,106 @@
 								},
 								moment: moment,
                 posts: [],
+								comments: [],
 								postDetail: {
 									id: '',
 									user_id: '',
 									written_text: '',
 									post_image: ''
+								},
+								comment: {
+									post_id: '',
+									comment_text: ''
 								}
             }
         },
         methods: {
 					async updatePost(post_id) {
-					const url = process.env.VUE_APP_ROOT_API + '/v1/post/' + post_id;
-					this.success = false;
-					this.error = null;
-					try {
 						let data = new FormData()
 						data.append('user_id', localStorage.id)
 						data.append('written_text', this.postDetail.written_text)
 						data.append('post_image', this.file)
 						data.append('_method', 'PUT')
 
-						const res = await axios.post(url, data, this.optionImage).then(res => res.data);
-					
-						if( typeof res.profile === 'undefined' ) {
-							console.log("Something went wrong!");
-							return
-						}
-
-						this.success = true;
-					
-					} catch (err) {
-						this.error = err.message;
-					}
+						await PostService.update(post_id, data).then((response) => {
+							this.postDetail = response.data.post
+							console.log(response.data.post)
+						}).catch((error) => {
+							console.log(error);
+						})
 					},
+					
 					async editPost(post_id) {
-						console.log("post_id", post_id)
-						let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/post/' + post_id, this.options)
-						this.postDetail = response.data.post
-						console.log("edit post", this.postDetail)
+						await PostService.getPostById(post_id).then((response) => {
+							this.postDetail = response.data.post
+							console.log(response.data.post)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
+
+					async doComment(post_id) {
+						this.comment.post_id = post_id
+					},
+					async doComment(post_id) {
+						this.comment.post_id = post_id
 					},
 					onChange(e) {
 						this.file = e.target.files[0];
-						console.log(this.file)
+						console.log(this.file)	
 					},
-					async onSubmitPost(){
-						try {
-							let data = new FormData()
-							data.append('user_id', localStorage.id)
-							data.append('written_text', this.writtenText)
-							data.append('post_image', this.file)
 
-							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/post', data, this.optionImage).then(res => res.data);
-		
-							if( typeof res.post === 'undefined' ) {
-								this.$router.push({ name: 'Post' })
-								return
-							}
+					async onSubmitPost() {
+						let data = new FormData()
+						data.append('user_id', localStorage.id)
+						data.append('written_text', this.writtenText)
+						data.append('post_image', this.file)
 
-							this.success = true;
-							console.log("test", this.success)
-							this.$router.push({ name: 'Post' })
-						
-						} catch (err) {
-							this.error = err.message;
-						}
-
+						await PostService.create(data).then((response) => {
+							this.posts = this.loadPosts()
+							console.log(response)
+						}).catch((error) => {
+							console.log(error);
+						})
 					},
+
 					async loadPosts() {
-							let response = await axios.get(process.env.VUE_APP_ROOT_API + '/v1/post', this.options)
+						await PostService.getAll().then((response) => {
 							this.posts = response.data.posts
-							console.log("res", response.data)
+							this.comments = response.data.posts.comments
+						}).catch((error) => {
+							console.log(error.response.data);
+						})
 					},
+					
 					async doLike(post_id) {
-						const formData = { user_id: localStorage.id, post_id: post_id, like: 1 };
+						const data = { user_id: localStorage.id, post_id: post_id};
+						await LikeService.likePost(data).then((response) => {
+							this.posts = this.loadPosts()
+							console.log(response.data)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
 
-						try {
-							const res = await axios.post(process.env.VUE_APP_ROOT_API + '/v1/like', formData, this.options).then(res => res.data);
-						
-							if( typeof res.like === 'undefined' ) {
-								console.log("Something went wrong")
-								return
-							}
+					async deletePost(post_id) {
+						await PostService.delete(post_id).then((response) => {
+							console.log("data", response)
+							this.posts = this.loadPosts()
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
 
-							this.success = true;
-						
-						} catch (err) {
-							this.error = err.message;
-						}
-					}
+					async commentPost(post_id) {
+						const data = { user_id: localStorage.id, post_id: post_id, comment_text: this.comment.comment_text }
+						await CommentService.create(data).then((response) => {
+							this.posts = this.loadPosts()
+							console.log(response.data)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
         },
         mounted() {
             this.loadPosts()

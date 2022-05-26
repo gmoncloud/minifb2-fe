@@ -5,7 +5,6 @@
 </template>
 <script>
   import TopNav from '@/components/Nav/TopNav.vue'
-  import { createToaster } from "@meforma/vue-toaster";
 
   export default {
     name: 'home-page',
@@ -13,8 +12,6 @@
       TopNav
     },
     mounted() {
-      const toaster = createToaster({ /* options */ });
-      toaster.show(`Hey! I'm here`);
     }
   };
 </script>

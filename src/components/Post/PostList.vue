@@ -123,6 +123,9 @@
 					</div>
 			</div>
     </div>
+		<div class="text-center" v-show="moreExist">
+			<button type="button" class="btn btn-primary btn-sm col-3" @click="loadMore()">Load More</button>
+		</div>
   </div>
 </div>
 </template>
@@ -148,6 +151,8 @@
         },
         data() {
             return {
+								moreExist: false,
+								nextPage: 0,
 								defaultImage: image,
 								writtenText: '',
 								mediaLocation: 'https://image.shutterstock.com/image-photo/green-hello-world-260nw-1311244001.jpg',
@@ -206,9 +211,7 @@
 					async doComment(post_id) {
 						this.comment.post_id = post_id
 					},
-					async doComment(post_id) {
-						this.comment.post_id = post_id
-					},
+
 					onChange(e) {
 						this.file = e.target.files[0];
 						console.log(this.file)	
@@ -230,10 +233,23 @@
 
 					async loadPosts() {
 						await PostService.getAll().then((response) => {
-							this.posts = response.data.posts
+							this.posts = response.data.posts.data
 							this.comments = response.data.posts.comments
+							console.log("current: ", response.data.posts.current_page)
+							console.log("last: ", response.data.posts.last_page)
+
+							if(response.data.posts.current_page < response.data.posts.last_page) {
+								this.moreExist = true
+								this.nextPage = response.data.posts.current_page + 1
+								console.log("next page:", this.nextPage)
+							}else{
+								this.moreExist = false
+							}
+
+							console.log("res", response)
+
 						}).catch((error) => {
-							console.log(error.response.data);
+							console.log(error.response.data.posts);
 						})
 					},
 					
@@ -261,6 +277,24 @@
 						await CommentService.create(data).then((response) => {
 							this.posts = this.loadPosts()
 							console.log(response.data)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
+
+					async loadMore() {
+						await PostService.loadMore(this.nextPage).then((response) => {
+							if(response.data.posts.current_page < response.data.posts.last_page) {
+								this.moreExist = true
+								this.nextPage = response.data.posts.current_page + 1
+							}else{
+								this.moreExist = false
+							}
+							
+							response.data.posts.data.forEach(data => {
+								this.posts.push(data)
+							});
+
 						}).catch((error) => {
 							console.log(error);
 						})

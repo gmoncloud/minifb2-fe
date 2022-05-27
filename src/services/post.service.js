@@ -27,5 +27,9 @@ export default {
 
   update(post_id, data) {
     return Axios.post(RESOURCE_NAME + '/' + post_id, data, OPTIONS);
+  },
+
+  loadMore(nextPage) {
+    return Axios.get(RESOURCE_NAME + `?page=${nextPage}`, OPTIONS);
   }
 }

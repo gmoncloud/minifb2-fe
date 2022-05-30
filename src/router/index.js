@@ -1,31 +1,54 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Home from "@/views/Home.vue";
-import About from "@/views/About.vue";
+import HomePage from "@/views/HomePage.vue";
 import User from "@/views/User.vue";
-import Register from "@/views/Register.vue";
-import Login from "@/views/Login.vue";
-import NotFound from "@/views/NotFound.vue";
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
-  },
-  {
-    path: "/about",
-    name: "About",
-    component: About,
+    component: HomePage,
+    children: [
+      {
+        path: 'profile',
+        components: {
+          helper: ()=> import("@/views/ProfilePage.vue")
+        }
+      },
+      {
+        path: 'friends',
+        components: {
+          helper: ()=> import("@/views/FriendPage.vue")
+        }
+      },
+      {
+        path: 'find-friends',
+        components: {
+          helper: ()=> import("@/views/FindFriendPage.vue")
+        }
+      },
+      {
+        path: 'my-post',
+        components: {
+          helper: import("@/views/MyPostPage.vue"),
+        }
+      },
+      {
+        path: 'post',
+        components: {
+          helper: import("@/views/PostPage.vue"),
+        }
+      }
+    ],
   },
   {
     path: "/register",
     name: "Register",
-    component: Register,
+    component: import("@/views/RegisterPage.vue"),
   },
   {
     path: "/login",
     name: "Login",
-    component: Login,
+    component: import("@/views/LoginPage.vue"),
   },
   {
     path: "/user/:name",
@@ -34,7 +57,7 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
-    component: NotFound,
+    component: import("@/views/NotFound.vue"),
   },
 ];
 

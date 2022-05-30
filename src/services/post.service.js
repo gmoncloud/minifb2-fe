@@ -1,6 +1,8 @@
 import Axios from 'axios'
 
 const RESOURCE_NAME = process.env.VUE_APP_ROOT_API + '/v1/post'
+const RESOURCE_NAME_USER_POSTS = process.env.VUE_APP_ROOT_API + '/v1/view-user-posts'
+const USER_ID = localStorage.id
 const OPTIONS = {
   headers: {
     'Content-Type': 'multipart/form-data', 
@@ -9,8 +11,12 @@ const OPTIONS = {
 }
 
 export default {
-  getAll() {
+  getAllPosts() {
     return Axios.get(RESOURCE_NAME, OPTIONS);
+  },
+
+  getAllUserPosts() {
+    return Axios.get(RESOURCE_NAME_USER_POSTS + '/' + USER_ID, OPTIONS);
   },
 
   delete(id) {
@@ -29,7 +35,11 @@ export default {
     return Axios.post(RESOURCE_NAME + '/' + post_id, data, OPTIONS);
   },
 
-  loadMore(nextPage) {
+  loadMorePosts(nextPage) {
     return Axios.get(RESOURCE_NAME + `?page=${nextPage}`, OPTIONS);
+  },
+
+  loadMoreUserPosts(nextPage) {
+    return Axios.get(RESOURCE_NAME_USER_POSTS + '/' + USER_ID + `?page=${nextPage}`, OPTIONS);
   }
 }

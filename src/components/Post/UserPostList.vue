@@ -1,16 +1,39 @@
 <template>
 	<div class="container">
+	<div class="row">
+		<div class="col-12">
+			<main class="form-post">
+				<form @submit.prevent="onSubmitPost" enctype="multipart/form-data">
+					<div class="card mb-3">
+						<input type="file" class="form-control" v-on:change="onChange">
+							<div class="card-body">						
+								<div class="float-holder clearfix">
+									<div class="form-group col-10 float-right">
+										<textarea v-model="writtenText" name="written_text" class="comment float-start form-control" placeholder="Whats on your mind"></textarea>
+									</div>
+									<button type="submit" class="btn btn-primary btn-sm col-1 float-start">Post</button>
+								</div>
+						</div>
+					</div>
+				</form>
+			</main>
+		</div>
+	</div>
   <div class="row">
     <div class="col-12" v-if="posts.length" >
 			<div class="card mb-2" v-for="post in posts" :key="post.id">
 				<div class="col-md-7 text-start">
 						<div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
 							<div class="col p-4 d-flex flex-column position-static">
+								<h2>{{ post.username }}</h2>
+								<hr>
 								<h3 class="mb-0">{{ post.written_text }}</h3>
 								<p class="card-text mb-auto">Last updated 3 mins ago</p>
 								<div class="row post-btn">
 									<button type="button" class="btn btn-primary col-md-3" @click="doLike(post.id)">Like ({{ post.likes_count }})</button>
 									<button type="button" class="btn btn-primary col-md-5" data-bs-toggle="modal" data-bs-target="#commentModal" @click="doComment(post.id)">Comment ({{ post.comments_count }})</button>
+									<button type="button" class="btn btn-primary col-md-2" data-bs-toggle="modal" data-bs-target="#postModal" @click="editPost(post.id)">Edit</button>
+									<button type="button" class="btn btn-primary col-md-2"  @click="deletePost(post.id)">Delete</button>
 								</div>
 							</div>
 
@@ -125,7 +148,7 @@
 		import CommentService from '@/services/comment.service'
 		import image from '@/assets/no-image-available.jpg'
     export default {
-        name: 'post-list',
+        name: 'user-post-list',
         components: {
         },
         data() {
@@ -178,6 +201,15 @@
 						})
 					},
 					
+					async editPost(post_id) {
+						await PostService.getPostById(post_id).then((response) => {
+							this.postDetail = response.data.post
+							console.log(response.data.post)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
+
 					async doComment(post_id) {
 						this.comment.post_id = post_id
 					},
@@ -187,8 +219,22 @@
 						console.log(this.file)	
 					},
 
+					async onSubmitPost() {
+						let data = new FormData()
+						data.append('user_id', localStorage.id)
+						data.append('written_text', this.writtenText)
+						data.append('post_image', this.file)
+
+						await PostService.create(data).then((response) => {
+							this.posts = this.loadPosts()
+							console.log(response)
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
+
 					async loadPosts() {
-						await PostService.getAllPosts().then((response) => {
+						await PostService.getAllUserPosts().then((response) => {
 							this.posts = response.data.posts.data
 							this.comments = response.data.posts.comments
 							console.log("current: ", response.data.posts.current_page)
@@ -219,6 +265,15 @@
 						})
 					},
 
+					async deletePost(post_id) {
+						await PostService.delete(post_id).then((response) => {
+							console.log("data", response)
+							this.posts = this.loadPosts()
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
+
 					async commentPost(post_id) {
 						const data = { user_id: localStorage.id, post_id: post_id, comment_text: this.comment.comment_text }
 						await CommentService.create(data).then((response) => {
@@ -230,7 +285,7 @@
 					},
 
 					async loadMore() {
-						await PostService.loadMorePosts(this.nextPage).then((response) => {
+						await PostService.loadMoreUserPosts(this.nextPage).then((response) => {
 							if(response.data.posts.current_page < response.data.posts.last_page) {
 								this.moreExist = true
 								this.nextPage = response.data.posts.current_page + 1

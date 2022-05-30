@@ -1,11 +1,11 @@
 <template>
   <div class="about">My Post Page</div>
-  <post-list />
+  <user-post-list />
 </template>
 <script>
-  import PostList from '@/components/Post/PostList.vue'
+  import UserPostList from '@/components/Post/UserPostList.vue'
   export default {
     name: 'my-post-page',
-    components: {PostList},
+    components: {UserPostList},
   };
 </script>

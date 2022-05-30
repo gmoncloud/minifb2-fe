@@ -113,7 +113,7 @@ body {
           this.$router.push({ name: 'Home', params: { id: res.data.user.id } })
 
         }).catch((err) => {
-          if (err.res.status == 422) {
+          if (err.response.status == 422) {
               this.errors = err.response.data.errors;
           }
           console.log('Error');

@@ -246,6 +246,24 @@
 							console.log(error);
 						})
 					},
+
+					async loadMore() {
+						await PostService.loadMore(this.nextPage).then((response) => {
+							if(response.data.posts.current_page < response.data.posts.last_page) {
+								this.moreExist = true
+								this.nextPage = response.data.posts.current_page + 1
+							}else{
+								this.moreExist = false
+							}
+							
+							response.data.posts.data.forEach(data => {
+								this.posts.push(data)
+							});
+
+						}).catch((error) => {
+							console.log(error);
+						})
+					},
         },
         mounted() {
             this.loadPosts()

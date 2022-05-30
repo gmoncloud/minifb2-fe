@@ -27,6 +27,12 @@ const routes = [
         }
       },
       {
+        path: 'my-post',
+        components: {
+          helper: import("@/views/MyPostPage.vue"),
+        }
+      },
+      {
         path: 'post',
         components: {
           helper: import("@/views/PostPage.vue"),

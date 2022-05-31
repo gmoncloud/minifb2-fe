@@ -11,6 +11,11 @@
         <button type="button" class="btn btn-success col-md-2" @click="addFriend(friend.id)">Add Friend</button>
       </div>
     </div>
+    <div class="row">
+      <div class="text-center" v-show="moreExist">
+        <button type="button" class="btn btn-primary btn-sm col-3" @click="loadMore()">Load More</button>
+      </div>
+    </div>
  </div>
 
 </template>
@@ -22,6 +27,8 @@
     components: {},
     data() {
         return {
+          moreExist: false,
+					nextPage: 0,
           defaultImage: image,
           friends: [],
           user_id: localStorage.id,
@@ -42,11 +49,37 @@
           console.log(error.response.data);
         })
       },
+      
       async loadFindFriends() {
         await FriendService.findFriends().then((response) => {
-          this.friends = response.data.users
+          this.friends = response.data.users.data
+          if(response.data.users.current_page < response.data.users.last_page) {
+            this.moreExist = true
+            this.nextPage = response.data.users.current_page + 1
+          }else{
+            this.moreExist = false
+          }
+
         }).catch((error) => {
-          console.log(error.response.data);
+          console.log(error.response.data.users);
+        })
+      },
+
+      async loadMore() {
+        await FriendService.loadMoreFindFriends(this.nextPage).then((response) => {
+          if(response.data.users.current_page < response.data.users.last_page) {
+            this.moreExist = true
+            this.nextPage = response.data.users.current_page + 1
+          }else{
+            this.moreExist = false
+          }
+          
+          response.data.users.data.forEach(data => {
+            this.friends.push(data)
+          });
+
+        }).catch((error) => {
+          console.log(error);
         })
       },
     },

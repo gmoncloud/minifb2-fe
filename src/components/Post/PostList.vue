@@ -6,8 +6,9 @@
 				<div class="col-md-7 text-start">
 						<div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
 							<div class="col p-4 d-flex flex-column position-static">
+								<span>Posted by: {{ post.user.name }}</span>
+								<hr>
 								<h3 class="mb-0">{{ post.written_text }}</h3>
-								<p class="card-text mb-auto">Last updated 3 mins ago</p>
 								<div class="row post-btn">
 									<button type="button" class="btn btn-primary col-md-3" @click="doLike(post.id)">Like ({{ post.likes_count }})</button>
 									<button type="button" class="btn btn-primary col-md-5" data-bs-toggle="modal" data-bs-target="#commentModal" @click="doComment(post.id)">Comment ({{ post.comments_count }})</button>

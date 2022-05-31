@@ -25,5 +25,13 @@ export default {
 
   create(data) {
     return Axios.post(RESOURCE_NAME, data, OPTIONS)
-  }
+  },
+
+  loadMoreFriends(nextPage) {
+    return Axios.get(RESOURCE_NAME + '/' + USER_ID + `?page=${nextPage}`, OPTIONS);
+  },
+
+  loadMoreFindFriends(nextPage) {
+    return Axios.get(RESOURCE_NAME_FIND_FRIENDS + '/' + USER_ID + `?page=${nextPage}`, OPTIONS);
+  },
 }

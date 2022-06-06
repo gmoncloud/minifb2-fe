@@ -1,5 +1,5 @@
 <template>
-  <p class="">FBMini &copy; 2017–2021. All Rights Reserved.</p>
+  <p>FBMini &copy; 2022. All Rights Reserved.</p>
 </template>
 
 <style lang="scss" scoped>

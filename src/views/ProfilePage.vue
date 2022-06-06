@@ -52,31 +52,19 @@
 
 <script>
   import ProfileService from '@/services/profile.service'
-  import image from '@/assets/no-image-available.jpg'
+  import image from '../../../onboarding-pro/src/assets/no-image-available.jpg'
 
   export default {
     name: 'profile-page',
-    components: {},
 		props: ['id'],
     data() {
         return {
           errors: {},
+          isSuccessfulRequest: false,
           errorMessage: '',
           file: '',
           user_id: localStorage.id,
           defaultImage: image,
-          options: {
-              headers: {
-                'Content-Type': 'application/json', 
-                'Authorization' : 'Bearer ' + localStorage.access_token
-              }
-            },
-            optionImage: {
-              headers: {
-                'Content-Type': 'multipart/form-data', 
-                'Authorization' : 'Bearer ' + localStorage.access_token
-              }
-            },
             profile: {
               display_name: '',
               profile_image: '',
@@ -108,7 +96,7 @@
 
         await ProfileService.update(userID, data).then((response) => {
           this.profile = response.data.profile
-          this.success = true;
+          this.isSuccessfulRequest = true;
         }).catch((err) => {
           if (err.response.status == 422) {
               this.errors = err.response.data.errors;

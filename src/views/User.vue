@@ -4,6 +4,5 @@
 <script>
   export default {
     name: 'user-detail',
-    components: {},
   };
 </script>

@@ -21,23 +21,17 @@
 </template>
 <script>
   import FriendService from '@/services/friend.service'
-  import image from '@/assets/no-image-available.jpg'
+  import image from '../../../onboarding-pro/src/assets/no-image-available.jpg'
   export default {
     name: 'find-friend-page',
-    components: {},
     data() {
         return {
+          isSuccessfulRequest: false,
           moreExist: false,
 					nextPage: 0,
           defaultImage: image,
           friends: [],
           user_id: localStorage.id,
-          options: {
-          headers: {
-            'Content-Type': 'application/json', 
-            'Authorization' : 'Bearer ' + localStorage.access_token
-          }
-        }
       }
     },
     methods: {

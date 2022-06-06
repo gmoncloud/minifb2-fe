@@ -1,5 +1,14 @@
 <template>
   <div id="text-center">
+
+    <div v-if="message"
+         :class="[isSuccessfulRequest ? 'alert alert-success' : 'alert alert-danger']"
+         class="px-4 py-3 rounded relative p-3 my-2"
+         role="alert">
+      <strong class="font-bold">{{ isSuccessfulRequest ? 'Success! ' : 'An error occurred: ' }}</strong>
+      <span class="sm:inline">{{ message }}</span>
+    </div>
+
     <main class="form-register">
       <form @submit.prevent="onSubmit">
         <h1 class="h3 mb-3 fw-normal">Create account</h1>
@@ -62,11 +71,10 @@
   import UserService from '@/services/user.service'
   export default {
     name: 'registration-page',
-    components: {
-    },
     data() {
       return {
         errors: {},
+        isSuccessfulRequest: false,
         form: {
           name: '',
           email: '',
@@ -85,14 +93,21 @@
           return
         }
 
-        this.success = true;
-        this.$router.push({ name: 'Login' })
+          this.isSuccessfulRequest = true;
+          this.message = 'Account successfully created';
+          setTimeout(function () {
+            this.$router.push({name: 'Login'})
+          }, 2000)
 
-        }).catch((err) => {
-          if (err.response.status == 422) {
-              this.errors = err.response.data.errors;
+          this.$router.push({name: 'Login'})
+
+        }).catch((error) => {
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          this.isSuccessfulRequest = false;
+
+          if (error.response.status == 422) {
+              this.errors = error.response.data.errors;
           }
-          console.log('Error');
         })
       },
     },

@@ -23,7 +23,8 @@
 							<div class="card" v-for="comment in post.comments" :key="comment.id">
 								<div class="card-body">
 									<!-- <h5 class="card-title">Card title</h5> -->
-									<p>{{ comment.comment_text }}</p>
+
+									<span class="fw-bold">{{ comment.user.name }}</span> <p>{{ comment.comment_text }}</p>
 								</div>
 							</div>
 														
@@ -124,7 +125,7 @@
 		import PostService from '@/services/post.service'
 		import LikeService from '@/services/like.service'
 		import CommentService from '@/services/comment.service'
-		import image from '@/assets/no-image-available.jpg'
+		import image from '../../../../onboarding-pro/src/assets/no-image-available.jpg'
     export default {
         name: 'post-list',
         components: {
@@ -136,18 +137,6 @@
 								defaultImage: image,
 								writtenText: '',
 								mediaLocation: 'https://image.shutterstock.com/image-photo/green-hello-world-260nw-1311244001.jpg',
-								options: {
-									headers: {
-										'Content-Type': 'application/json', 
-										'Authorization' : 'Bearer ' + localStorage.access_token
-									}
-								},
-								optionImage: {
-									headers: {
-										'Content-Type': 'multipart/form-data', 
-										'Authorization' : 'Bearer ' + localStorage.access_token
-									}
-								},
 								moment: moment,
                 posts: [],
 								comments: [],

@@ -85,11 +85,10 @@ body {
   import UserService from '@/services/user.service'
   export default {
     name: 'login-page',
-    components: {
-    },
     data() {
         return {
           errors: {},
+          isSuccessfulRequest: false,
           errorMessage: '',
           email: '',
           password: '',

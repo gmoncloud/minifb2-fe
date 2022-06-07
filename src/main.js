@@ -1,10 +1,12 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from "./App.vue"
-import router from './router' 
+import router from './router'
+import Toaster from "@meforma/vue-toaster";
 
 
 createApp(App)
-.use(router)
-.mount('#app')
+    .use(router)
+    .use(Toaster)
+    .mount('#app')

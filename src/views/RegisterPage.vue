@@ -14,7 +14,7 @@
         <h1 class="h3 mb-3 fw-normal">Create account</h1>
 
         <div class="form-floating">
-          <input type="text" v-model="form.name" name="name" class="form-control" id="floatingInputName" placeholder="name" re/>
+          <input type="text" v-model="form.name" name="name" class="form-control" id="floatingInputName" placeholder="name" />
           <label for="floatingInputName">Full Name</label>
           
           <div class="alert alert-danger" role="alert" v-if="errors && errors.name">
@@ -69,6 +69,8 @@
 
 <script>
   import UserService from '@/services/user.service'
+  import { createToaster } from "@meforma/vue-toaster"
+  const toaster = createToaster({ /* options */ })
   export default {
     name: 'registration-page',
     data() {
@@ -102,12 +104,12 @@
           this.$router.push({name: 'Login'})
 
         }).catch((error) => {
-          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
-          this.isSuccessfulRequest = false;
-
           if (error.response.status == 422) {
               this.errors = error.response.data.errors;
           }
+
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
     },

@@ -20,7 +20,9 @@
 </template>
 <script>
   import FriendService from '@/services/friend.service'
-  import image from '../../../onboarding-pro/src/assets/no-image-available.jpg'
+  import image from '@/assets/no-image-available.jpg'
+  import { createToaster } from "@meforma/vue-toaster"
+  const toaster = createToaster({ /* options */ })
   export default {
     name: 'friend-page',
     data() {
@@ -38,7 +40,8 @@
         await FriendService.delete(friend_id).then((response) => {
           this.friends = response.data.friends
         }).catch((error) => {
-          console.log(error.response.data);
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
 
@@ -53,7 +56,8 @@
           }
 
         }).catch((error) => {
-          console.log(error.response.data.friends);
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
 
@@ -71,7 +75,8 @@
           });
 
         }).catch((error) => {
-          console.log(error);
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
 

@@ -83,6 +83,8 @@ body {
 
 <script>
   import UserService from '@/services/user.service'
+  import { createToaster } from "@meforma/vue-toaster"
+  const toaster = createToaster({ /* options */ })
   export default {
     name: 'login-page',
     data() {
@@ -111,11 +113,12 @@ body {
           localStorage.setItem("access_token", res.data.access_token);
           this.$router.push({ name: 'Home', params: { id: res.data.user.id } })
 
-        }).catch((err) => {
-          if (err.response.status == 422) {
-              this.errors = err.response.data.errors;
+        }).catch((error) => {
+          if (error.response.status == 422) {
+              this.errors = error.response.data.errors;
           }
-          console.log('Error');
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
       

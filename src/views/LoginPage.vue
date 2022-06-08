@@ -111,7 +111,7 @@ body {
           localStorage.setItem("id", res.data.user.id);
           localStorage.setItem("username", res.data.user.name);
           localStorage.setItem("access_token", res.data.access_token);
-          this.$router.push({ name: 'Home', params: { id: res.data.user.id } })
+          this.$router.push({name: 'Home'});
 
         }).catch((error) => {
           if (error.response.status == 422) {

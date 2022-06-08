@@ -97,10 +97,6 @@
 
           this.isSuccessfulRequest = true;
           this.message = 'Account successfully created';
-          setTimeout(function () {
-            this.$router.push({name: 'Login'})
-          }, 2000)
-
           this.$router.push({name: 'Login'})
 
         }).catch((error) => {

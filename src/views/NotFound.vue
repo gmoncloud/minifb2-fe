@@ -4,6 +4,5 @@
 <script>
   export default {
     name: 'not-found-page',
-    components: {},
   };
 </script>

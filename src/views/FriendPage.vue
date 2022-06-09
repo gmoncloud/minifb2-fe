@@ -21,22 +21,18 @@
 <script>
   import FriendService from '@/services/friend.service'
   import image from '@/assets/no-image-available.jpg'
+  import { createToaster } from "@meforma/vue-toaster"
+  const toaster = createToaster({ /* options */ })
   export default {
     name: 'friend-page',
-    components: {},
     data() {
         return {
+          isSuccessfulRequest: false,
           moreExist: false,
           defaultImage: image,
 					nextPage: 0,
           friends: [],
           user_id: localStorage.id,
-          options: {
-          headers: {
-            'Content-Type': 'application/json', 
-            'Authorization' : 'Bearer ' + localStorage.access_token
-          }
-        }
       }
     },
     methods: {
@@ -44,7 +40,8 @@
         await FriendService.delete(friend_id).then((response) => {
           this.friends = response.data.friends
         }).catch((error) => {
-          console.log(error.response.data);
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
 
@@ -59,7 +56,8 @@
           }
 
         }).catch((error) => {
-          console.log(error.response.data.friends);
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
 
@@ -77,7 +75,8 @@
           });
 
         }).catch((error) => {
-          console.log(error);
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
 

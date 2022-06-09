@@ -1,11 +1,20 @@
 <template>
   <div id="text-center">
+
+    <div v-if="message"
+         :class="[isSuccessfulRequest ? 'alert alert-success' : 'alert alert-danger']"
+         class="px-4 py-3 rounded relative p-3 my-2"
+         role="alert">
+      <strong class="font-bold">{{ isSuccessfulRequest ? 'Success! ' : 'An error occurred: ' }}</strong>
+      <span class="sm:inline">{{ message }}</span>
+    </div>
+
     <main class="form-register">
       <form @submit.prevent="onSubmit">
         <h1 class="h3 mb-3 fw-normal">Create account</h1>
 
         <div class="form-floating">
-          <input type="text" v-model="form.name" name="name" class="form-control" id="floatingInputName" placeholder="name" re/>
+          <input type="text" v-model="form.name" name="name" class="form-control" id="floatingInputName" placeholder="name" />
           <label for="floatingInputName">Full Name</label>
           
           <div class="alert alert-danger" role="alert" v-if="errors && errors.name">
@@ -60,13 +69,14 @@
 
 <script>
   import UserService from '@/services/user.service'
+  import { createToaster } from "@meforma/vue-toaster"
+  const toaster = createToaster({ /* options */ })
   export default {
     name: 'registration-page',
-    components: {
-    },
     data() {
       return {
         errors: {},
+        isSuccessfulRequest: false,
         form: {
           name: '',
           email: '',
@@ -85,14 +95,17 @@
           return
         }
 
-        this.success = true;
-        this.$router.push({ name: 'Login' })
+          this.isSuccessfulRequest = true;
+          this.message = 'Account successfully created';
+          this.$router.push({name: 'Login'})
 
-        }).catch((err) => {
-          if (err.response.status == 422) {
-              this.errors = err.response.data.errors;
+        }).catch((error) => {
+          if (error.response.status == 422) {
+              this.errors = error.response.data.errors;
           }
-          console.log('Error');
+
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message;
+          toaster.show(this.message);
         })
       },
     },
